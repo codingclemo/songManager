@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- ========================= RESOURCE DEFINITIONS ========================= -->
+    
+  <context:property-placeholder location="jpa.properties" />
+  
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${database.driverClassName}" />
+		<property name="url" value="${database.url}" />
+		<property name="username" value="${database.username}" />
+		<property name="password" value="${database.password}" />
+	</bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="swt6.spring.worklog.domain" />
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+		</property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.format_sql">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">create</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- BeanPostProcessor that processes @PersistenceContext for injecting EntityManager -->
+	<bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+    <!-- BeanPostProcessor for exception translation -->
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<!-- ============================ DAO DEFINITIONS =========================== -->
+	<!-- automatically register beans in package -->
+	<context:component-scan base-package="swt6.spring.worklog.dao, swt6.spring.worklog.logic"/>
+	<!-- use spring data repository -->
+	<jpa:repositories base-package="swt6.spring.worklog.dao"/>
+	<!-- ====================== BUSINESS OBJECT DEFINIONS ======================= -->
+
+
+	<!-- ======================== TRANSACTION DEFINIONS ========================= -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory"/>
+	</bean>
+
+	<!-- version 2: annotation-based configuration -->
+	<tx:annotation-driven/>
+
+	<!-- version 1: xml-based configuration
+	<tx:advice id="txAdivce" transaction-manager="transactionManager" >
+		<tx:attributes>
+			<tx:method name="find*" read-only="true"/>
+			<tx:method name="*" />
+		</tx:attributes>
+	</tx:advice> -->
+
+	<!-- bring together transaction advice and pointcut
+	<aop:config>
+		<aop:pointcut id="transactedOperations" expression="execution( public * swt6.spring.worklog.logic.WorkLogImpl1.*(..) )"/>
+		bring together transaction advice and pointcut
+		<aop:advisor advice-ref="txAdivce" pointcut-ref="transactedOperations"/>
+	</aop:config> -->
+	
+	<!-- ========================= UIProcessComponent =========================== -->
+
+	     
+</beans>
+
+
+

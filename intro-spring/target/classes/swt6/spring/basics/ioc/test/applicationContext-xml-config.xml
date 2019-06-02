@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="consoleLogger" class="swt6.spring.basics.ioc.util.ConsoleLogger">
+        <property name="prefix" value="INFO" />
+    </bean>
+
+    <bean id="fileLogger" class="swt6.spring.basics.ioc.util.FileLogger" destroy-method="close">
+        <property name="fileName" value="logx.txt" />
+    </bean>
+
+
+    <bean id="workLog-setter-injected" class="swt6.spring.basics.ioc.logic.xmlconfig.WorkLogImpl">
+        <property name="logger" ref="consoleLogger" />
+    </bean>
+
+    <bean id="workLog-constructor-injected" class="swt6.spring.basics.ioc.logic.xmlconfig.WorkLogImpl">
+        <constructor-arg ref="fileLogger" />
+    </bean>
+
+</beans>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="Apache Derby (Remote) - WorkLogDb@localhost" uuid="a696d3e5-d61c-4a99-ac44-5a0e4df63bbf">
+      <driver-ref>derby.remote</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.apache.derby.jdbc.ClientDriver</jdbc-driver>
+      <jdbc-url>jdbc:derby://localhost:1527/WorkLogDb;create=true</jdbc-url>
+    </data-source>
+  </component>
+</project>
