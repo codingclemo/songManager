@@ -51,12 +51,20 @@
                 <label class="control-label" th:errors="*{duration}">[error]</label>
             </div>
 
-            <div class="form-group col-sm-4"
-                 th:classappend="${#fields.hasErrors('genre')} ? 'has-error'">
-                <label for="email">Genre:</label>
-                <input id="genreName" type="text" th:field="*{genre.name}"  class="form-control" disabled/>
-                <label class="control-label" th:errors="*{genre.name}">[error]</label>
+            <!--<div class="form-group col-sm-4"-->
+                 <!--th:classappend="${#fields.hasErrors('genre')} ? 'has-error'">-->
+                <!--<label for="email">Genre:</label>-->
+                <!--<input id="genreName" type="text" th:field="*{genre.name}"  class="form-control" disabled/>-->
+                <!--<label class="control-label" th:errors="*{genre.name}">[error]</label>-->
+            <!--</div>-->
+            <div class="form-group col-sm-4">
+                <label for="genre">Genre:</label>
+
+                <select id="genre" class="form-control" th:field="*{genre.name}">
+                    <option th:each="g :${genres}" th:value="${g.name}" th:text="${g.name}"/>
+                </select>
             </div>
+
         </div>
 
 

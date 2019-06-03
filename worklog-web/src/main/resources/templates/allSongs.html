@@ -25,15 +25,24 @@
             <th>Duration</th>
             <th>Genre</th>
             <th>Albums</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="song : ${songs}">
             <td th:text="${song.title}">song title</td>
             <td th:text="${song.interpret}">song artist</td>
-            <td th:text="${song.duration % 60}">1:23</td>
+            <td th:text="${song.duration}">1:23</td>
             <td th:text="${song.genre.name}">Indie</td>
             <td th:text="${song.albums.size()}">#ofAlbums</td>
+            <td><a th:href="@{|/songs/${song.id}/delete|}">Delete</a></td>
+            <!--<td>-->
+                <!--<form th:object="${song}" method="post" >-->
+                    <!--&lt;!&ndash;<input type="hidden" th:field="*{id}" />&ndash;&gt;-->
+                    <!--<input type="submit" th:value="${song.title}" class="btn btn-success" />-->
+                    <!--<button>Delete</button>-->
+                <!--</form>-->
+            <!--</td>-->
         </tr>
         </tbody>
     </table>

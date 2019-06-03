@@ -12,6 +12,7 @@ import swt6.spring.worklog.domain.Genre;
 import swt6.spring.worklog.domain.Song;
 
 import java.util.List;
+import java.util.Set;
 
 @Component("songManager")
 @Primary
@@ -43,6 +44,7 @@ public class SongManagerImpl implements SongManagerFacade {
     @Override
     public Song syncSong(Song song) {
         return songRepository.saveAndFlush(song);
+//        return songRepository.save(song);
     }
 
     @Override
@@ -57,12 +59,23 @@ public class SongManagerImpl implements SongManagerFacade {
 
     @Override
     public void deleteSong(Long id) {
+        Song song = findSongById(id);
+        Set<Album> albums = song.getAlbums();
+        for (Album a :
+                albums) {
+            song.removeAlbum(a);
+        }
+
+
+        song.removeGenre(song.getGenre());
+
         songRepository.deleteById(id);
     }
 
     @Override
     public Album syncAlbum(Album album) {
         return albumRepository.saveAndFlush(album);
+//        return albumRepository.save(album);
     }
 
     @Override
@@ -83,6 +96,7 @@ public class SongManagerImpl implements SongManagerFacade {
     @Override
     public Genre syncGenre(Genre genre) {
         return genreRepository.saveAndFlush(genre);
+//        return genreRepository.save(genre);
     }
 
     @Override

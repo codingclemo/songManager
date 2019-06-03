@@ -16,7 +16,7 @@ public class Album implements Serializable {
     @Column(name = "releaseYear")
     private int year;
 
-    @ManyToMany(cascade=CascadeType.ALL,
+    @ManyToMany(cascade= {CascadeType.PERSIST, CascadeType.MERGE},
             fetch=FetchType.EAGER)
     @JoinTable(name="AlbumSongs",
     joinColumns = {@JoinColumn(name="albumId")},
@@ -82,6 +82,7 @@ public class Album implements Serializable {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", year=" + year +
+                ", songs=" + songs +
                 '}';
     }
 }

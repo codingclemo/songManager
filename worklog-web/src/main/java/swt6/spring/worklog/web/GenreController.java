@@ -29,29 +29,4 @@ public class GenreController {
         logger.debug("genres: " + genres);
         return "genreList";
     }
-
-/*
-    @RequestMapping(value="/albums/new", method = RequestMethod.GET)
-    public String initNew(Model model) {
-        Album album = new Album("", 1990);
-        model.addAttribute("album", album);
-        return "album";
-    }
-
-    @RequestMapping(value="/albums/new", method = RequestMethod.POST)
-    public String processNew(@ModelAttribute("album") Album album, BindingResult result, Model model) {
-        return internalProcessUpdate(album, result);
-    }
-
-    private String internalProcessUpdate(Album album, BindingResult result) {
-        if (result.hasErrors()) {
-            return "album";
-        }
-        else {
-            album = songManager.syncAlbum(album);
-            logger.debug("added/updated album {}", album);
-            return "redirect:/albums";
-        }
-    }
-*/
 }

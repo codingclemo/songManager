@@ -17,7 +17,7 @@ public class Song implements Serializable {
     private String interpret;
 
     @ManyToMany(mappedBy = "songs",
-            cascade= CascadeType.ALL,
+            cascade= {CascadeType.PERSIST, CascadeType.MERGE},
             fetch=FetchType.EAGER)
     private Set<Album> albums = new HashSet<>();
 
@@ -123,7 +123,8 @@ public class Song implements Serializable {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", duration=" + duration +
-                ", Interpret='" + interpret + '\'' +
+                ", interpret='" + interpret + '\'' +
+                ", genre='" + genre + '\'' +
                 '}';
     }
 }

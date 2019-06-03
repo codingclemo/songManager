@@ -31,7 +31,7 @@
             <tr th:each="song : ${songs}">
                 <td th:text="${song.title}">song title</td>
                 <td th:text="${song.interpret}">song artist</td>
-                <td th:text="${song.duration % 60}">1:23</td>
+                <td th:text="${song.duration}">1:23</td>
                 <td th:text="${song.genre.name}">Indie</td>
                 <!--<td th:text="${#temporals.format(entry.endTime, 'yyyy-MM-dd HH:mm')}">2000-01-01-->
                     <!--12:00</td>-->

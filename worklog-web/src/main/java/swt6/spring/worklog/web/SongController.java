@@ -27,7 +27,7 @@ public class SongController {
     private SongManagerFacade songManager;
 
     @RequestMapping("/songs")
-    public String list(Model model) {
+    public String listAllSongs(Model model) {
         List<Song> songs = new ArrayList<>(songManager.findAllSongs());
         Collections.sort(songs, Comparator.comparing(Song::getTitle));
         model.addAttribute("songs", songs);
@@ -37,7 +37,7 @@ public class SongController {
 
 
     @RequestMapping("/albums/{albumId}/songs")
-    public String list(@PathVariable("albumId")long albumId, Model model) {
+    public String listAlbumSongs(@PathVariable("albumId")long albumId, Model model) {
 
         Album album = songManager.findAlbumById(albumId);
         List<Song> songs = new ArrayList<>(album.getSongs());
@@ -55,7 +55,10 @@ public class SongController {
         Album album = songManager.findAlbumById(albumId);
         album.addSong(song);
         model.addAttribute("song", song);
-        //model.addAttribute("genreName", "asdasd");
+
+        List<Genre> genres = songManager.findAllGenres();
+        Collections.sort(genres, Comparator.comparing(Genre::getName));
+        model.addAttribute("genres", genres);
 
         return "song";
     }
@@ -63,52 +66,33 @@ public class SongController {
     @RequestMapping(value="/albums/{albumId}/songs/new", method = RequestMethod.POST)
     public String processNew(@PathVariable("albumId") Long albumId,
                              @ModelAttribute("song") Song song,
-                             //@ModelAttribute("genreName") String genreName,
                              BindingResult result, Model model) {
 
+        return internalProcessUpdate(albumId, song, result);
+    }
+
+    private String internalProcessUpdate(Long albumId, Song song, BindingResult result) {
         if (result.hasErrors()) {
             return "song";
         }
         else {
-            //song = songManager.findSongById(song.getId());
-            song = songManager.syncSong(song);
-            song.addAlbum(songManager.findAlbumById(albumId));
-            //song = addGenre(song, genreName);
+            logger.debug("song" + song);
+            addGenre(song);
+            logger.debug("song" + song);
+            //song.addAlbum(songManager.findAlbumById(albumId));
             song = songManager.syncSong(song);
             logger.debug("added/updated song {}", song);
             return "redirect:/albums/{albumId}/songs";
         }
     }
 
-    private String internalProcessUpdate(Long albumId, Song song, /* String genreName, */ BindingResult result) {
-        if (result.hasErrors()) {
-            return "song";
-        }
-        else {
-            //song = songManager.findSongById(song.getId());
-
-            song.addAlbum(songManager.findAlbumById(albumId));
-            //song = addGenre(song, genreName);
-            song = songManager.syncSong(song);
-            logger.debug("added/updated song {}", song);
-            return "redirect:/albums/{albumId}/songs";
-        }
-    }
-
-    private Song addGenre(Song song, String genreName) {
+    private Song addGenre(Song song) {
         Collection<Genre> genres = songManager.findAllGenres();
-        boolean found = false;
-        for (Genre genre : genres) {
-            if (genre.getName().equals(genreName)) {
-                found = true;
-                song.addGenre(genre);
+        for (Genre g : genres) {
+            if (g.getName().equals(song.getGenre().getName())) {
+                song.addGenre(g);
                 break;
             }
-        }
-
-        if (!found) {
-            Genre genre = new Genre(genreName);
-            song.addGenre(genre);
         }
         return song;
     }
@@ -118,28 +102,26 @@ public class SongController {
                              @PathVariable("songId") Long songId,
                              Model model) {
 
+        List<Genre> genres = songManager.findAllGenres();
+        Collections.sort(genres, Comparator.comparing(Genre::getName));
         Song song = songManager.findSongById(songId);
-
-//        String genreName = "";
-//        if (song.getGenre() != null)
-//            genreName = song.getGenre().getName();
-
         model.addAttribute("song", song);
-        //model.addAttribute("genreName", genreName);
+        model.addAttribute("genres", genres);
+
         return "song";
     }
 
     @RequestMapping(value="/albums/{albumId}/songs/{songId}/update", method = RequestMethod.POST)
     public String processUpdate(@PathVariable("albumId") Long albumId,
                                 @ModelAttribute("song") Song song,
-//                                @ModelAttribute("genreName") String genreName,
+                                @ModelAttribute("genre") Genre genre,
                                 BindingResult result) {
-        return internalProcessUpdate(albumId, song, /* genreName, */ result);
-
+        logger.debug("genre: " + genre);
+        return internalProcessUpdate(albumId, song, result);
     }
 
     @RequestMapping(value="/albums/{albumId}/songs/{songId}/remove", method = RequestMethod.GET)
-    public String initRemove(@PathVariable("albumId") Long albumId,
+    public String initRemoveFromAlbum(@PathVariable("albumId") Long albumId,
                              @PathVariable("songId") Long songId,
                              Model model) {
 
@@ -149,17 +131,18 @@ public class SongController {
     }
 
     @RequestMapping(value="/albums/{albumId}/songs/{songId}/remove", method = RequestMethod.POST)
-    public String processRemove(@PathVariable("albumId") Long albumId,
+    public String processRemoveFromAbum(@PathVariable("albumId") Long albumId,
                                 @ModelAttribute("song") Song song) {
         Album album = songManager.findAlbumById(albumId);
         song = songManager.findSongById(song.getId());
-
         song.removeAlbum(album);
-        //album = songManager.syncAlbum(album);
         song = songManager.syncSong(song);
-
-//        album.removeSong(song);
-//        album = songManager.syncAlbum(album);
         return "redirect:/albums/{albumId}/songs";
+    }
+
+    @RequestMapping(value="/songs/{songId}/delete", method = RequestMethod.GET)
+    public String processDeleteSong(@PathVariable("songId") Long songId) {
+        songManager.deleteSong(songId);
+        return "redirect:/songs";
     }
 }

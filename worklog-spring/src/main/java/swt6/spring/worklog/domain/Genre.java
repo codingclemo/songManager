@@ -15,7 +15,7 @@ public class Genre implements Serializable {
     private String name;
 
     @OneToMany(mappedBy = "genre",
-            cascade = CascadeType.ALL,
+            cascade= {CascadeType.PERSIST, CascadeType.MERGE},
             fetch=FetchType.LAZY)
     private Set<Song> songs = new HashSet<>();
 
